@@ -36,6 +36,13 @@ pub trait PathMaker {
         }
     }
 
+    fn path_to_systime(&self, path: &PathBuf) -> Result<SystemTime, PathMakerError> {
+        match path.file_name() {
+            Some(f) => self.filename_to_systime(&f),
+            _ => Err(PathMakerError::NoFileNameErr),
+        }
+    }
+
     fn systime_to_filename(&self, time: &SystemTime) -> OsString {
         let utc: DateTime<Utc> = (*time).into();
         self.time_to_filename(&utc)
