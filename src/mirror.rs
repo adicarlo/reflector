@@ -385,7 +385,26 @@ mod tests {
     #[test]
     fn latest_capture() {
         let m = mock_mirror();
-        assert!(m.latest_capture().is_some());
+        let c = m.latest_capture().unwrap();
+        eprintln!("capture path: {}", c.path.display());
+        assert!(c.path.exists(), "capture path exists");
+
+        let ago = SystemTime::now() - Duration::from_secs(60);
+        m.pathmaker.path_to_systime(&c.path).unwrap();
+
+        assert!(
+            ago < c.time,
+            "derived filename to time '{}' should be no older than {}",
+            display_systime(&c.time),
+            display_systime(&ago)
+        );
+
+        assert!(
+            ago < c.time,
+            "capture time {} should be no older than {}",
+            display_systime(&c.time),
+            display_systime(&ago)
+        );
     }
 
     #[test]
